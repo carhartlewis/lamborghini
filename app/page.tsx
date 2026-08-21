@@ -88,7 +88,7 @@ export default async function Home() {
             </Button>
             <Button
               size="sm"
-              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
+              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].amount)} />}
             >
               Bid {formatUsd(MIN_BID)}
             </Button>
@@ -118,7 +118,7 @@ export default async function Home() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button
               size="lg"
-              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
+              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].amount)} />}
             >
               Claim your slice
               <ArrowRight data-icon="inline-end" />
@@ -172,7 +172,7 @@ export default async function Home() {
               const flagship = i === BID_TIERS.length - 1;
               return (
                 <Card
-                  key={tier.productId}
+                  key={tier.amount}
                   className={
                     flagship ? "border-primary/50 bg-primary/5" : "bg-card/60"
                   }
@@ -189,7 +189,7 @@ export default async function Home() {
                     <Button
                       variant={flagship ? "default" : "outline"}
                       className="w-full"
-                      nativeButton={false} render={<a href={checkoutUrl(tier.productId)} />}
+                      nativeButton={false} render={<a href={checkoutUrl(tier.amount)} />}
                     >
                       Bid {formatUsd(tier.amount)}
                     </Button>
@@ -235,7 +235,7 @@ export default async function Home() {
           </h2>
           <Button
             size="lg"
-            nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
+            nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].amount)} />}
           >
             Start at {formatUsd(MIN_BID)}
             <ArrowRight data-icon="inline-end" />

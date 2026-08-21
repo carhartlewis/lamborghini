@@ -11,18 +11,36 @@ export function getDb() {
   return client;
 }
 
-// One paid Polar order per row; a sponsor's share is the sum of their orders.
+// One row per Checkout Session. A sponsor's share is the sum of their PAID
+// rows — ACH bids sit at 'pending' for ~4 business days before settling, and
+// refunded bids stop counting, so status drives the leaderboard.
 export function ensureSchema() {
-  schemaReady ??= getDb().execute(
-    `CREATE TABLE IF NOT EXISTS bids (
-      order_id TEXT PRIMARY KEY,
-      customer_id TEXT NOT NULL,
-      name TEXT NOT NULL,
-      email TEXT,
-      domain TEXT,
-      amount_cents INTEGER NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )`,
-  ).then(() => undefined);
+  schemaReady ??= (async () => {
+    const db = getDb();
+    await db.execute(
+      `CREATE TABLE IF NOT EXISTS bids (
+        order_id TEXT PRIMARY KEY,
+        customer_id TEXT NOT NULL,
+        payment_intent TEXT,
+        name TEXT NOT NULL,
+        email TEXT,
+        domain TEXT,
+        amount_cents INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'paid',
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )`,
+    );
+    // Columns added after the Polar→Stripe migration; ignore "duplicate column".
+    for (const sql of [
+      `ALTER TABLE bids ADD COLUMN status TEXT NOT NULL DEFAULT 'paid'`,
+      `ALTER TABLE bids ADD COLUMN payment_intent TEXT`,
+    ]) {
+      try {
+        await db.execute(sql);
+      } catch {
+        // column already exists
+      }
+    }
+  })();
   return schemaReady;
 }

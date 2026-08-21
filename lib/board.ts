@@ -10,9 +10,12 @@ export type Board = {
 export async function getBoard(): Promise<Board> {
   try {
     await ensureSchema();
+    // Only settled money buys screen time: pending ACH, failed, and refunded
+    // bids are excluded from the board and the pool total.
     const res = await getDb().execute(
       `SELECT customer_id, name, domain, SUM(amount_cents) AS total_cents, MAX(created_at) AS last_at
        FROM bids
+       WHERE status = 'paid'
        GROUP BY customer_id
        ORDER BY total_cents DESC, last_at ASC`,
     );

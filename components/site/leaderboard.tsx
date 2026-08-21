@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -45,18 +44,7 @@ export function Leaderboard({
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
-                  <Avatar className="size-8 rounded-md border border-border bg-background">
-                    {s.domain && (
-                      <AvatarImage
-                        src={logoUrl(s.domain)}
-                        alt={`${s.name} logo`}
-                        className="p-1"
-                      />
-                    )}
-                    <AvatarFallback className="rounded-md text-xs">
-                      {s.name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <SponsorLogo name={s.name} domain={s.domain} />
                   {s.domain ? (
                     <a
                       href={`https://${s.domain}`}
@@ -109,6 +97,35 @@ export function Leaderboard({
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+// Plain <img> so the favicon is in the server-rendered HTML — no client-side
+// swap-in, and no next/image remotePatterns config for a 64px icon.
+function SponsorLogo({
+  name,
+  domain,
+}: {
+  name: string;
+  domain: string | null;
+}) {
+  if (!domain) {
+    return (
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-[0.65rem] font-semibold text-muted-foreground">
+        {name.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={logoUrl(domain)}
+      alt=""
+      width={32}
+      height={32}
+      loading="lazy"
+      className="size-8 shrink-0 rounded-md border border-border bg-background p-1"
+    />
   );
 }
 

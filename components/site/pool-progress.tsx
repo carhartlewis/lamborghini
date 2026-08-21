@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import { Progress } from "@/components/ui/progress";
 import { POOL_CAP, formatUsd } from "@/lib/bids";
 
 export function PoolProgress({ claimed }: { claimed: number }) {
@@ -38,11 +37,21 @@ export function PoolProgress({ claimed }: { claimed: number }) {
           of {formatUsd(POOL_CAP)} claimed
         </p>
       </div>
-      <Progress
-        value={pct}
+      {/* Plain markup, like the leaderboard's share bars: the shimmer gradient
+          and custom height fought Base UI's internal Progress structure. */}
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={POOL_CAP}
+        aria-valuenow={claimed}
         aria-label={`${formatUsd(claimed)} of ${formatUsd(POOL_CAP)} claimed`}
-        className="[&_[data-slot=progress-track]]:h-2 [&_[data-slot=progress-indicator]]:bg-[linear-gradient(90deg,var(--primary),oklch(0.94_0.14_95),var(--primary))] [&_[data-slot=progress-indicator]]:bg-[length:200%_100%] [&_[data-slot=progress-indicator]]:[animation:shimmer_3s_linear_infinite]"
-      />
+        className="h-2 w-full overflow-hidden rounded-full bg-muted"
+      >
+        <div
+          className="h-full rounded-full bg-[linear-gradient(90deg,var(--primary),oklch(0.94_0.14_95),var(--primary))] bg-[length:200%_100%] [animation:shimmer_3s_linear_infinite]"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
       <p className="text-sm text-balance text-muted-foreground">
         Hits {formatUsd(POOL_CAP)} — the board closes forever. Doesn&apos;t
         fill — everyone&apos;s refunded in full.

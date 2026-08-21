@@ -74,7 +74,7 @@ export function ShareCalculator() {
           <Stat value="1×" label="payment. Lifetime of the car." />
         </div>
 
-        <Button size="lg" nativeButton={false} render={<a href={checkoutUrl(tier.productId)} />}>
+        <Button size="lg" nativeButton={false} render={<a href={checkoutUrl(tier.amount)} />}>
           Bid {formatUsd(tier.amount)} — {tier.label}
           <ArrowRight data-icon="inline-end" />
         </Button>
