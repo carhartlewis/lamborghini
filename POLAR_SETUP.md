@@ -44,8 +44,39 @@ Production integration for org **lambo-inc** (`60155e08-cc44-4cf6-883a-46be0fb13
 - [ ] After deploy, confirm webhook deliveries succeed in the Polar dashboard (endpoint above).
 - [ ] Archive the `Test Product` and delete `LAMBOTEST100` before going loud.
 
+## How a paid bid becomes a leaderboard row
+
+1. Visitor hits `/checkout?products=<tier id>` and pays on Polar's hosted checkout.
+2. Polar sends `order.paid` to `/api/webhook/polar` (signature-verified).
+3. The handler inserts a row into `bids` — name and email from the Polar customer,
+   plus a `domain` derived from the email (free-mail domains like gmail.com are
+   skipped, so no bogus logos).
+4. `revalidatePath("/")` refreshes the board; the page is also ISR at 120s.
+5. The row renders with the company's favicon via
+   `https://www.google.com/s2/favicons?domain=<domain>` and links to their site.
+
+Shares come from the amount **actually charged**, so a 100%-discounted test order
+records $0 and never moves the board.
+
+## Seeded sponsor
+
+`Comp AI` — $25,000 (12.5% of the car), domain `trycomp.ai`, no payment taken.
+It's a plain row in `bids` with `order_id = 'seed-comp-ai'`; delete that row to
+remove it. Everything else stays open for paid bids.
+
+## Vercel
+
+Project `comp-ai-poc/lamborghini`, domain `lamborghini.lol`.
+All five env keys are set for Production + Preview.
+
+⚠️ The site 404'd on every path after the first deploys because the project's
+**Framework Preset was "Other"** — Vercel ran the build but served it as a static
+site with no Next.js routing. Fixed by setting `framework: "nextjs"` on the
+project. If you ever recreate the project, set the preset to Next.js.
+
 ## Notes
 
 - Customer portal: **no app code needed** — Polar hosts it and emails customers the link.
-- Leaderboard shows demo data until the first real `order.paid` row lands in Turso.
 - The webhook secret was written into `.env` directly from the API response (never printed).
+- Sponsors are identified by their checkout email — no login required. If you later
+  add auth, pass `externalCustomerId` at checkout and resolve it in the webhook.
