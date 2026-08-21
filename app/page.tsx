@@ -1,69 +1,256 @@
-import Image from "next/image";
+import { ArrowDown, ArrowRight, Flame } from "lucide-react";
 
-export default function Home() {
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Lambo } from "@/components/site/lambo";
+import { Leaderboard } from "@/components/site/leaderboard";
+import { PoolProgress } from "@/components/site/pool-progress";
+import { ShareCalculator } from "@/components/site/share-calculator";
+import {
+  BID_TIERS,
+  DRIVE_HOURS_PER_DAY,
+  MIN_BID,
+  POOL_CAP,
+  checkoutUrl,
+  formatShare,
+  formatUsd,
+} from "@/lib/bids";
+import { getBoard } from "@/lib/board";
+
+export const revalidate = 120;
+
+const FAQ = [
+  {
+    q: "Is this real?",
+    a: "Yes. Real car, real billboard, real payment. That's the joke.",
+  },
+  {
+    q: "What am I buying?",
+    a: `A permanent share of the screen: your total over ${formatUsd(POOL_CAP)}. ${formatUsd(50_000)} = a quarter of the car.`,
+  },
+  {
+    q: "For how long?",
+    a: "The lifetime of the car. One payment, no renewals.",
+  },
+  {
+    q: "Can I be outbid?",
+    a: "No one can take your share — they can only buy what's left.",
+  },
+  {
+    q: "Can I grow my share?",
+    a: "Yes. Bids stack. Pay again, own more car.",
+  },
+  {
+    q: "What if the car crashes?",
+    a: "It's insured, and the driver likes being alive. We'll manage.",
+  },
+];
+
+export default async function Home() {
+  const board = await getBoard();
+  const remaining = POOL_CAP - board.claimed;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="flex flex-col">
+      {/* Nav */}
+      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4">
+          <a href="#" className="display text-lg tracking-tight">
+            lamborghini<span className="text-primary">.lol</span>
+          </a>
+          <nav className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" nativeButton={false} render={<a href="#board" />}>
+              The board
+            </Button>
+            <Button variant="ghost" size="sm" nativeButton={false} render={<a href="#faq" />}>
+              FAQ
+            </Button>
+            <Button
+              size="sm"
+              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
+            >
+              Bid {formatUsd(MIN_BID)}
+            </Button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[60rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-4 pt-16 pb-14 text-center">
+          <Badge variant="outline" className="border-primary/40 text-primary">
+            <Flame data-icon="inline-start" />
+            {formatUsd(remaining)} of car still for sale
+          </Badge>
+          <h1 className="display max-w-4xl text-6xl text-balance sm:text-8xl">
+            Your logo. On a{" "}
+            <span className="text-primary">Lamborghini</span>. Forever.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <p className="max-w-xl text-lg text-balance text-muted-foreground">
+            A digital billboard on a real Lambo, on the road{" "}
+            {DRIVE_HOURS_PER_DAY}+ hours a day. From {formatUsd(MIN_BID)}. For
+            the lifetime of the car.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button
+              size="lg"
+              nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              Claim your slice
+              <ArrowRight data-icon="inline-end" />
+            </Button>
+            <Button variant="outline" size="lg" nativeButton={false} render={<a href="#board" />}>
+              Who&apos;s on the car
+              <ArrowDown data-icon="inline-end" />
+            </Button>
+          </div>
+          <Lambo className="w-full max-w-3xl" />
+          <div className="w-full max-w-2xl">
+            <PoolProgress claimed={board.claimed} />
+          </div>
+        </div>
+      </section>
+
+      {/* Leaderboard — the product */}
+      <section id="board" className="border-y border-border">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="display text-4xl text-balance sm:text-5xl">
+              Who owns the car
+            </h2>
+            <p className="text-sm tabular text-muted-foreground">
+              {formatUsd(board.claimed)} claimed · {formatUsd(remaining)} left
+            </p>
+          </div>
+          <Leaderboard
+            sponsors={board.sponsors}
+            claimed={board.claimed}
+            isDemo={board.isDemo}
+          />
+        </div>
+      </section>
+
+      {/* Calculator */}
+      <section className="mx-auto w-full max-w-3xl px-4 py-16">
+        <ShareCalculator />
+      </section>
+
+      {/* Tiers */}
+      <section className="border-y border-border bg-card/30">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-16">
+          <h2 className="display text-4xl text-balance sm:text-5xl">
+            Pick a number
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {BID_TIERS.map((tier, i) => {
+              const flagship = i === BID_TIERS.length - 1;
+              return (
+                <Card
+                  key={tier.productId}
+                  className={
+                    flagship ? "border-primary/50 bg-primary/5" : "bg-card/60"
+                  }
+                >
+                  <CardHeader>
+                    <CardTitle className="display text-3xl tabular">
+                      {formatUsd(tier.amount)}
+                    </CardTitle>
+                    <CardDescription className="text-balance">
+                      {formatShare(tier.amount)} of the screen. Forever.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="mt-auto">
+                    <Button
+                      variant={flagship ? "default" : "outline"}
+                      className="w-full"
+                      nativeButton={false} render={<a href={checkoutUrl(tier.productId)} />}
+                    >
+                      Bid {formatUsd(tier.amount)}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          <p className="text-xs text-balance text-muted-foreground">
+            Bids stack — pay again any time to grow your share.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="mx-auto w-full max-w-3xl px-4 py-16">
+        <div className="flex flex-col gap-8">
+          <h2 className="display text-4xl text-balance sm:text-5xl">FAQ</h2>
+          <Accordion>
+            {FAQ.map((item) => (
+              <AccordionItem key={item.q} value={item.q}>
+                <AccordionTrigger className="text-left font-semibold">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-balance text-muted-foreground">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="relative overflow-hidden border-t border-border">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-48 left-1/2 h-96 w-[60rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
+        />
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-4 py-20 text-center">
+          <h2 className="display max-w-3xl text-5xl text-balance sm:text-7xl">
+            {formatUsd(remaining)} of Lamborghini left
+          </h2>
+          <Button
+            size="lg"
+            nativeButton={false} render={<a href={checkoutUrl(BID_TIERS[0].productId)} />}
+          >
+            Start at {formatUsd(MIN_BID)}
+            <ArrowRight data-icon="inline-end" />
+          </Button>
+        </div>
+      </section>
+
+      <Separator />
+      <footer className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-xs text-muted-foreground">
+        <p className="text-balance">
+          lamborghini<span className="text-primary">.lol</span> — a tribute to{" "}
+          <a
+            href="https://outbid.lol"
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            outbid.lol
+          </a>
+          , with a car.
+        </p>
+        <p className="text-balance">
+          Payments by Polar. Depreciation by physics.
+        </p>
+      </footer>
+    </main>
   );
 }
