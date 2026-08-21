@@ -89,9 +89,19 @@ lib/polar.ts          — single Polar SDK client (POLAR_SERVER-driven)
 5. Build the page (hero, calculator, leaderboard, FAQ) with seeded example sponsors.
 6. Wire "Bid" CTAs to `/checkout?products=<id>`; verify build; hand off.
 
+## Shipped in v1 (beyond the original scope)
+
+- **Turso (libSQL) database**: `bids` table, one row per paid Polar order.
+  `order.paid` records the bid (amount actually charged, so $0 test orders
+  don't inflate the board) and revalidates `/`; `customer.state_changed`
+  syncs sponsor name/email. Leaderboard + pool bar read real totals and fall
+  back to the demo board while empty.
+- **Terms on the page**: full refund for everyone if the $200k doesn't fill
+  (6–8 weeks after close); social media clout provided; the leaderboard
+  stays on the site forever alongside the car IRL.
+
 ## Later (not in v1)
 
-- Database (bids table) + auth so the leaderboard is real, fed by `order.paid`.
 - Custom bid amounts via Polar pay-what-you-want or per-amount checkout creation.
-- Live pool math from Polar orders instead of seed data.
+- Sponsor logos/taglines captured at checkout (custom fields) instead of name-only rows.
 - Public car-cam / route map page; per-sponsor click tracking like outbid.lol.

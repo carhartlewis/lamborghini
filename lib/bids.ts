@@ -56,51 +56,17 @@ export function minutesPerHour(amount: number) {
   return shareOfPool(amount) * 60;
 }
 
-// Demo board until the leaderboard is fed by paid Polar orders (order.paid
-// webhook -> database). Fictional companies — replace at launch.
+// A row on the board: one sponsor, aggregated from their paid Polar orders.
 export type Sponsor = {
   rank: number;
   name: string;
-  tagline: string;
+  domain: string | null;
   amount: number;
   claimedAgo: string;
 };
 
-export const DEMO_SPONSORS: Sponsor[] = [
-  {
-    rank: 1,
-    name: "Chargeblade",
-    tagline: "Usage-based billing that doesn't bill you for using it",
-    amount: 50_000,
-    claimedAgo: "2 days ago",
-  },
-  {
-    rank: 2,
-    name: "Kubernaut",
-    tagline: "Kubernetes, but you keep your weekends",
-    amount: 25_000,
-    claimedAgo: "5 days ago",
-  },
-  {
-    rank: 3,
-    name: "InvoiceGoblin",
-    tagline: "Chases your unpaid invoices so you don't have to",
-    amount: 10_000,
-    claimedAgo: "1 week ago",
-  },
-  {
-    rank: 4,
-    name: "MeetingSlayer",
-    tagline: "Declines meetings on your behalf. Politely. Usually.",
-    amount: 5_000,
-    claimedAgo: "1 week ago",
-  },
-  {
-    rank: 5,
-    name: "PagerDucky",
-    tagline: "Incident response for teams that panic quietly",
-    amount: 1_000,
-    claimedAgo: "2 weeks ago",
-  },
-];
+// Company logo via Google's favicon service, when we know the domain.
+export function logoUrl(domain: string) {
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
+}
 

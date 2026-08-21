@@ -19,6 +19,7 @@ export function ensureSchema() {
       customer_id TEXT NOT NULL,
       name TEXT NOT NULL,
       email TEXT,
+      domain TEXT,
       amount_cents INTEGER NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,

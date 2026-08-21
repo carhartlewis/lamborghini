@@ -14,7 +14,6 @@ import {
 import { Slider } from "@/components/ui/slider";
 import {
   BID_TIERS,
-  DRIVE_HOURS_PER_DAY,
   MIN_BID,
   POOL_CAP,
   checkoutUrl,
@@ -27,7 +26,6 @@ export function ShareCalculator() {
   const [amount, setAmount] = useState(25_000);
 
   const minutes = minutesPerHour(amount);
-  const dailyMinutes = minutes * DRIVE_HOURS_PER_DAY;
   // Closest purchasable tier — checkout runs on fixed Polar products for now.
   const tier = BID_TIERS.reduce((best, t) =>
     Math.abs(t.amount - amount) < Math.abs(best.amount - amount) ? t : best,
@@ -73,10 +71,7 @@ export function ShareCalculator() {
             value={`${Math.round(minutes * 10) / 10} min`}
             label="every hour on the road"
           />
-          <Stat
-            value={`~${Math.round(dailyMinutes)} min`}
-            label={`per day (~${DRIVE_HOURS_PER_DAY}h of driving)`}
-          />
+          <Stat value="1×" label="payment. Lifetime of the car." />
         </div>
 
         <Button size="lg" nativeButton={false} render={<a href={checkoutUrl(tier.productId)} />}>

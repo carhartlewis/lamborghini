@@ -1,45 +1,35 @@
-import { DEMO_SPONSORS, type Sponsor } from "./bids";
+import { type Sponsor } from "./bids";
 import { ensureSchema, getDb } from "./db";
 
 export type Board = {
   sponsors: Sponsor[];
   claimed: number;
-  isDemo: boolean;
 };
 
-const DEMO_BOARD: Board = {
-  sponsors: DEMO_SPONSORS,
-  claimed: DEMO_SPONSORS.reduce((s, x) => s + x.amount, 0),
-  isDemo: true,
-};
-
-// Real board from paid Polar orders; demo board until the first real bid.
+// The board is real data only: paid Polar orders plus seeded sponsors.
 export async function getBoard(): Promise<Board> {
   try {
     await ensureSchema();
     const res = await getDb().execute(
-      `SELECT customer_id, name, SUM(amount_cents) AS total_cents, MAX(created_at) AS last_at
+      `SELECT customer_id, name, domain, SUM(amount_cents) AS total_cents, MAX(created_at) AS last_at
        FROM bids
        GROUP BY customer_id
        ORDER BY total_cents DESC, last_at ASC`,
     );
-    if (res.rows.length === 0) return DEMO_BOARD;
-
     const sponsors: Sponsor[] = res.rows.map((row, i) => ({
       rank: i + 1,
       name: String(row.name),
-      tagline: "",
+      domain: row.domain ? String(row.domain) : null,
       amount: Math.round(Number(row.total_cents) / 100),
       claimedAgo: timeAgo(String(row.last_at)),
     }));
     return {
       sponsors,
       claimed: sponsors.reduce((s, x) => s + x.amount, 0),
-      isDemo: false,
     };
   } catch (error) {
-    console.error("Failed to load board from Turso, using demo board", error);
-    return DEMO_BOARD;
+    console.error("Failed to load board from Turso", error);
+    return { sponsors: [], claimed: 0 };
   }
 }
 

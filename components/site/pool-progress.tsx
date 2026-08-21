@@ -44,7 +44,8 @@ export function PoolProgress({ claimed }: { claimed: number }) {
         className="[&_[data-slot=progress-track]]:h-2 [&_[data-slot=progress-indicator]]:bg-[linear-gradient(90deg,var(--primary),oklch(0.94_0.14_95),var(--primary))] [&_[data-slot=progress-indicator]]:bg-[length:200%_100%] [&_[data-slot=progress-indicator]]:[animation:shimmer_3s_linear_infinite]"
       />
       <p className="text-sm text-balance text-muted-foreground">
-        When it hits {formatUsd(POOL_CAP)}, the board closes forever.
+        Hits {formatUsd(POOL_CAP)} — the board closes forever. Doesn&apos;t
+        fill — everyone&apos;s refunded in full.
       </p>
     </div>
   );

@@ -22,7 +22,6 @@ import { PoolProgress } from "@/components/site/pool-progress";
 import { ShareCalculator } from "@/components/site/share-calculator";
 import {
   BID_TIERS,
-  DRIVE_HOURS_PER_DAY,
   MIN_BID,
   POOL_CAP,
   checkoutUrl,
@@ -40,7 +39,7 @@ const FAQ = [
   },
   {
     q: "What am I buying?",
-    a: `A permanent share of the screen: your total over ${formatUsd(POOL_CAP)}. ${formatUsd(50_000)} = a quarter of the car.`,
+    a: `A permanent share of the screen: your total over ${formatUsd(POOL_CAP)}. ${formatUsd(50_000)} = a quarter of the car. Plus your spot on this leaderboard, forever.`,
   },
   {
     q: "For how long?",
@@ -53,6 +52,14 @@ const FAQ = [
   {
     q: "Can I grow my share?",
     a: "Yes. Bids stack. Pay again, own more car.",
+  },
+  {
+    q: `What if the ${formatUsd(POOL_CAP)} doesn't fill?`,
+    a: "Everyone gets a full refund, 6–8 weeks after the round closes. Zero risk, all upside.",
+  },
+  {
+    q: "Do I get anything besides the car?",
+    a: "Social media clout. Provided.",
   },
   {
     q: "What if the car crashes?",
@@ -105,9 +112,8 @@ export default async function Home() {
             <span className="text-primary">Lamborghini</span>. Forever.
           </h1>
           <p className="max-w-xl text-lg text-balance text-muted-foreground">
-            A digital billboard on a real Lambo, on the road{" "}
-            {DRIVE_HOURS_PER_DAY}+ hours a day. From {formatUsd(MIN_BID)}. For
-            the lifetime of the car.
+            A digital billboard on a real Lambo. From {formatUsd(MIN_BID)}.
+            For the lifetime of the car.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button
@@ -133,18 +139,20 @@ export default async function Home() {
       <section id="board" className="border-y border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="display text-4xl text-balance sm:text-5xl">
-              Who owns the car
-            </h2>
+            <div className="flex flex-col gap-2">
+              <h2 className="display text-4xl text-balance sm:text-5xl">
+                Who owns the car
+              </h2>
+              <p className="text-sm text-balance text-muted-foreground">
+                This board lives here forever — while the car does its thing
+                IRL.
+              </p>
+            </div>
             <p className="text-sm tabular text-muted-foreground">
               {formatUsd(board.claimed)} claimed · {formatUsd(remaining)} left
             </p>
           </div>
-          <Leaderboard
-            sponsors={board.sponsors}
-            claimed={board.claimed}
-            isDemo={board.isDemo}
-          />
+          <Leaderboard sponsors={board.sponsors} claimed={board.claimed} />
         </div>
       </section>
 
